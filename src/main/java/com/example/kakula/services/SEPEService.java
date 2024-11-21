@@ -23,7 +23,12 @@ public class SEPEService {
 
         try {
             // Faz a solicitação GET para a API do SEPE
-            return restTemplate.getForObject(url, Map.class);
+            Map<String, Object> response = restTemplate.getForObject(url, Map.class);
+            
+            // Logar a resposta para verificar o formato
+            System.out.println(response);
+
+            return response;
         } catch (Exception e) {
             throw new IllegalArgumentException("Erro ao consultar o BI: " + e.getMessage());
         }

@@ -59,14 +59,20 @@ public class UsuarioController {
     }
     
     @PostMapping("/registrar")
-    public ResponseEntity<Usuario> criarUsuario(@Valid @RequestBody UsuarioDto usuarioDto) {
-        try {
-            Usuario usuarioCriado = usuarioService.criarUsuario(usuarioDto);
-            return new ResponseEntity<>(usuarioCriado, HttpStatus.CREATED);
-        } catch (IllegalArgumentException e) {
-            return ResponseEntity.badRequest().body(null);
-        }
+public ResponseEntity<?> criarUsuario(@Valid @RequestBody UsuarioDto usuarioDto) {
+    try {
+        Usuario usuarioCriado = usuarioService.criarUsuario(usuarioDto);
+        return new ResponseEntity<>(usuarioCriado, HttpStatus.CREATED);
+    } catch (IllegalArgumentException e) {
+        // Retornar um erro com a mensagem do problema
+        return ResponseEntity.badRequest().body(e.getMessage());
+    } catch (Exception e) {
+        // Captura outras exceções inesperadas
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                             .body("Erro inesperado: " + e.getMessage());
     }
+}
+
 
     @GetMapping("/email/{email}")
    public ResponseEntity<UsuarioResponseDto> encontrarUsuarioPorEmail(@PathVariable String email) {

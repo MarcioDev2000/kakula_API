@@ -37,29 +37,39 @@ public class UsuarioService {
     private SEPEService sepeService;
 
     public Usuario criarUsuario(UsuarioDto usuarioDto) {
-      
+        // Consultar o BI na API do SEPE para verificar se é válido
         Map<String, Object> dadosBI = sepeService.consultarBI(usuarioDto.getBi());
-        if (dadosBI == null || !dadosBI.containsKey("status") || !"valido".equals(dadosBI.get("status"))) {
+        
+        // Verificar se a resposta da API contém dados do BI
+        if (dadosBI == null || dadosBI.isEmpty()) {
             throw new IllegalArgumentException("BI inválido ou não encontrado.");
         }
-
+    
+        // Verificar se o email já está cadastrado
         if (usuarioRepository.findByEmail(usuarioDto.getEmail()).isPresent()) {
             throw new IllegalArgumentException("Email já cadastrado.");
         }
-
+    
+        // Criar um novo objeto Usuario
         Usuario usuario = new Usuario();
         usuario.setNome(usuarioDto.getNome());
         usuario.setEmail(usuarioDto.getEmail());
         usuario.setBi(usuarioDto.getBi());
         usuario.setTelefone(usuarioDto.getTelefone());
+        
         // Criptografar a senha antes de salvar
         usuario.setSenha(passwordEncoder.encode(usuarioDto.getSenha()));
         usuario.setRole(usuarioDto.getRole());
-
+    
+        // Salvar o usuário no banco de dados
         Usuario salvarUsuario = usuarioRepository.save(usuario);
+    
+        // Enviar email de confirmação ou outro tipo de notificação
         userProducer.sendEmail(salvarUsuario);
+        
         return salvarUsuario;
     }
+    
 
     @Transactional
     public List<UsuarioResponseDto> listarUsuarios() {

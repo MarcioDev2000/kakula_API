@@ -21,11 +21,9 @@ public class UsuarioDto {
     private String senha;
 
     @NotBlank(message = "O número do BI é obrigatório.")
-    @Pattern(regexp = "\\d{9}[A-Z]{2}\\d{3}", message = "O BI deve estar no formato correto (exemplo: 000162855LA013).")
     private String bi;
 
     @NotNull(message = "O telefone é obrigatório.")
-    @Pattern(regexp = "\\d{9}", message = "O telefone deve conter exatamente 9 dígitos numéricos.")
     private String telefone;
 
     @NotNull(message = "O papel (role) é obrigatório.")
